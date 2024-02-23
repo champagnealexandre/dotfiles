@@ -4,6 +4,8 @@
 
 #### \> Managed with chezmoi
 
+</div>
+
 ## :package:&nbsp; Dependencies
 
 You need to have these packages installed in your system if you want to set up:
