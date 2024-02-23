@@ -1,0 +1,127 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ADD MELPA PACKAGE REPOSITORY
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+;; and `package-pinned-packages`. Most users will not need or want to do this.
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(package-initialize)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages '(markdown-mode auctex highlight-indent-guides)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; LOAD CUSTOM THEME
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+;(load-theme 'high-contrast t)
+(load-theme 'doom-one t)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PUT ALL AUTOSAVES IN ONE PLACE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; create the autosave dir if necessary, since emacs won't.
+(make-directory "~/.emacs-backups/autosaves/" t)
+(make-directory "~/.emacs-backups/backups/" t)
+
+;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs-backups/.
+ (setq auto-save-file-name-transforms '((".*" "~/.emacs-backups/autosaves/\\1" t)))
+ (setq backup-directory-alist '((".*" . "~/.emacs-backups/backups/")))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CLEAN UP USELESS BUFFERS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Removes *scratch* from buffer after the mode has been set.
+(defun remove-scratch-buffer ()
+  (if (get-buffer "*scratch*")
+      (kill-buffer "*scratch*")))
+(add-hook 'after-change-major-mode-hook 'remove-scratch-buffer)
+
+;; Removes *messages* from the buffer.
+(setq-default message-log-max nil)
+(kill-buffer "*Messages*")
+
+;; Removes *Completions* from buffer after you've opened a file.
+(add-hook 'minibuffer-exit-hook
+      '(lambda ()
+         (let ((buffer "*Completions*"))
+           (and (get-buffer buffer)
+                (kill-buffer buffer)))))
+
+;; Removes startup screen/messages
+(setq inhibit-startup-buffer-menu t)
+(setq inhibit-startup-screen t)
+(setq inhibit-splash-screen t)
+(setq inhibit-startup-message t)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; BASE CUSTOMIZATION
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; show column number in status bar
+(setq column-number-mode t)
+
+;; set "C-x m" as "comment line"
+(global-set-key (kbd "C-x m") 'comment-line)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SET-UP INDENT-GUIDES
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+(add-hook 'text-mode-hook 'highlight-indent-guides-mode)
+(require 'highlight-indent-guides)
+(setq highlight-indent-guides-method 'character)
+(setq highlight-indent-guides-auto-enabled nil)
+
+(set-face-background 'highlight-indent-guides-odd-face "darkgray")
+(set-face-background 'highlight-indent-guides-even-face "dimgray")
+(set-face-foreground 'highlight-indent-guides-character-face "dimgray")
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; LATEX (to be completed)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; (setq TeX-PDF-mode t)                ; PDF mode (rather than DVI-mode)
+
+; (setq TeX-parse-self t) ; Enable parse on load.
+; (setq TeX-auto-save t) ; Enable parse on save.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MARKDOWN-MODE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(autoload 'markdown-mode "markdown-mode"
+   "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist
+             '("\\.\\(?:md\\|markdown\\|mkd\\|mdown\\|mkdn\\|mdwn\\)\\'" . markdown-mode))
+
+(autoload 'gfm-mode "markdown-mode"
+   "Major mode for editing GitHub Flavored Markdown files" t)
+(add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
+
+(with-eval-after-load 'markdown-mode
+  (define-key markdown-mode-map (kbd "C-c C-e") #'markdown-do))
+
+(add-to-list 'load-path "~/.emacs.d/elpa/julia-emacs-master")
+(require 'julia-mode)
+
